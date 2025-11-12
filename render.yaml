@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: email-assistance-backend
+    env: java
+    buildCommand: "./mvnw clean package -DskipTests"
+    startCommand: "java -jar target/*.jar"
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8080
