@@ -1,14 +1,17 @@
-# Use official JDK 17 image
-FROM eclipse-temurin:17-jdk
+# Step 1: Build stage (use Maven wrapper inside container)
+FROM eclipse-temurin:17-jdk AS builder
 
-# Set working directory inside the container
+WORKDIR /app
+COPY . .
+RUN ./mvnw clean package -DskipTests
+
+# Step 2: Run stage (use smaller image for final JAR)
+FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
-# Copy built JAR from Maven target folder
-COPY target/*.jar app.jar
+# Copy the built JAR file from the builder stage
+COPY --from=builder /app/target/*.jar app.jar
 
-# Expose port 8080 for Render
 EXPOSE 8080
 
-# Run the Spring Boot JAR
 ENTRYPOINT ["java", "-jar", "app.jar"]
